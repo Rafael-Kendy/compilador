@@ -2,7 +2,7 @@
 public class Token {
 	public String lexema;
 	public TipoToken tipo;
-	public int linha; //chave pra tabela hash/simbolos
+	public int linha;
 	
 	public Token(String lexema, TipoToken tipo, int linha) {
 		this.lexema = lexema;
