@@ -132,25 +132,28 @@ public class Lexico {
 	                break; //ignora o restante da linha
 	            }
 	            
-	            if(str.startsWith("\"") && str.endsWith("\"")) {
-	            	Token tok_cadeia=new Token(str, TipoToken.Cadeia, linha_num);
-	            	System.out.println("\t" + tok_cadeia);
-                    return tok_cadeia;
-	            }else if(str.startsWith("\"")){ //comeca com aspas mas nao fechou
-	            	System.out.println("\tERRO Léxico na linha " + linha_num + ": \"" + str + "\"");
-	            	System.exit(1);
-	            }//if(str.startsWith("\"") && str.endsWith("\""))
+	            if (str.matches("^\".*\"$")) { //string que começa e termina com aspas
+	                Token tok_cadeia = new Token(str, TipoToken.Cadeia, linha_num);
+	                System.out.println("\t" + tok_cadeia);
+	                return tok_cadeia;
+	            } else if (str.startsWith("\"") && !str.endsWith("\"")) { //começa com aspas mas não fechou
+	                System.out.println("\tERRO Léxico na linha " + linha_num + ": \"" + str + "\"");
+	                System.exit(1);
+	            } else if (str.endsWith("\"") && !str.startsWith("\"")) { //apenas aspas no final
+	                System.out.println("\tERRO Léxico na linha " + linha_num + ": \"" + str + "\"");
+	                System.exit(1);
+	            }
 	            
 	            //detecta numeros
 	            if (Pattern.matches("\\d*\\.\\d+", str) || Pattern.matches("\\d+\\.", str)) { //numero real
-	                    Token tok_real = new Token(str, TipoToken.NumReal, linha_num);
-	                    System.out.println("\t" + tok_real);
-	                    return tok_real;
-	                } else if (Pattern.matches("\\d+", str)) { //numero int
-	                    Token tok_int = new Token(str, TipoToken.NumInt, linha_num);
-	                    System.out.println("\t" + tok_int);
-	                    return tok_int;
-	                }
+	                Token tok_real = new Token(str, TipoToken.NumReal, linha_num);
+	                System.out.println("\t" + tok_real);
+	                return tok_real;
+	            } else if (Pattern.matches("\\d+", str)) { //numero int
+	            	Token tok_int = new Token(str, TipoToken.NumInt, linha_num);
+	                System.out.println("\t" + tok_int);
+	                return tok_int;
+	            }
 	            
 	            if((i+1)<=substr.length) { //se ainda nao ta no ultimo substr
 	            	if((str.equals("<")||str.equals(">")||str.equals(":")||str.equals("!")||str.equals("=")) && substr[i+1].equals("=")) {
