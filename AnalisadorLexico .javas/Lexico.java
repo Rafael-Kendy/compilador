@@ -194,4 +194,4 @@ public class Lexico {
 	        str_at=linha_at.length(); //chegou no final
 		}//while(true)
 	}//proximoToken
-}//AnalLexico
+}//Lexico
