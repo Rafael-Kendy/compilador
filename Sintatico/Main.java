@@ -16,6 +16,10 @@ public class Main {
 			tokens.add(novoTok);
 			t=lex.proximoToken();
 		}//while
+		if(t==null) {
+			Token fim=new Token("$", TipoToken.Fim, tokens.get(tokens.size()-1).getLinha()+1);
+			tokens.add(fim);
+		}//adiciona um token fim de arquivo
 		
 		System.out.println("\n\nAnálise Sintática:");
 		Sintatico sin=new Sintatico(tokens);

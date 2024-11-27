@@ -8,5 +8,6 @@ public enum TipoToken { //enum com os tipos de tokens da linguagem
 	AbrePar, FechaPar,
 	Var,
 	NumInt, NumReal,
-	Cadeia
+	Cadeia,
+	Fim
 }
