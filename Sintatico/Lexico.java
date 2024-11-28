@@ -155,7 +155,7 @@ public class Lexico {
 	                return tok_int;
 	            }
 	            
-	            if((i+1)<=substr.length) { //se ainda nao ta no ultimo substr
+	            if((i+1)<substr.length) { //se ainda nao ta no ultimo substr
 	            	if((str.equals("<")||str.equals(">")||str.equals(":")||str.equals("!")||str.equals("=")) && substr[i+1].equals("=")) {
 	            		i++;
 	            		String op2=str+substr[i];
