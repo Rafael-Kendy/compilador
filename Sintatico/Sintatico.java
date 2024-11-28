@@ -8,8 +8,6 @@ public class Sintatico {
 	TipoToken tt;
 	String erro_pcdec="esperado <PCDec, 'DEC'>";
 	String erro_pcprog="esperado <PCProg, 'PROG'>";
-	String erro_pcint="esperado <PCInt, 'INT'>";
-	String erro_pcreal="esperado <PCReal, 'REAL'>";
 	String erro_pcler="esperado <PCLer, 'LER'>";
 	String erro_pcimprimir="esperado <PCImprimir, 'IMPRIMIR'>";
 	String erro_pcse="esperado <PCSe, 'SE'>";
@@ -18,34 +16,19 @@ public class Sintatico {
 	String erro_pcenqto="esperado <PCEnqto, 'ENQTO'>";
 	String erro_pcini="esperado <PCIni, 'INI'>";
 	String erro_pcfim="esperado <PCFim, 'FIM'>";
-	String erro_oparitmult="esperado <OpAritMult, '*'>";
-	String erro_oparitdiv="esperado <OpAritDiv, '/'>";
-	String erro_oparitsoma="esperado <OpAritSoma, '+'>";
-	String erro_oparitsub="esperado <OpAritSub, '-'>";
-	String erro_oprelmenor="esperado <OpRelMenor, '<'>";
-	String erro_oprelmenorigual="esperado <OpRelMenorIgual, '<='>";
-	String erro_oprelmaior="esperado <OpRelMaior, '>'>";
-	String erro_oprelmaiorigual="esperado <OpRelMaiorIgual, '>='>";
-	String erro_opreligual="esperado <OpRelIgual, '=='>";
-	String erro_opreldif="esperado <OpRelDif, '!='>";
-	String erro_opboole="esperado <OpBoolE, 'E'>";
-	String erro_opboolou="esperado <OpBoolOu, 'OU'>";
 	String erro_delim="esperado <Delim, ':'>";
 	String erro_atrib="esperado <Atrib, ':='>";
 	String erro_abrepar="esperado <AbrePar, '('>";
 	String erro_fechapar="esperado <FechaPar, ')'>";
 	String erro_var="esperado <Var, 'VARIAVEL'>";
-	String erro_numint="esperado <NumInt, 'INT'>";
-	String erro_numreal="esperado <NumReal, 'REAL'>";
-	String erro_cadeia="esperado <Cadeia, CADEIA>";
 	
 	String erro_tipovar="esperado <TipoVar -> 'INT' | 'REAL'>";
 	String erro_comsaida2="esperado <ComSaida2 -> 'VARIAVEL' | 'CADEIA'>";
-	String erro_exparit2="esperado <ExpArit2 → '+' ExpArit | '-' ExpArit | e>";
-	String erro_termoarit2="esperado <TermoArit2 → '*' FatorArit TermoArit2 | '/' FatorArit TermoArit2 | e>";
+	String erro_exparit2="esperado <ExpArit2 → '+ | -' ExpArit | e>";
+	String erro_termoarit2="esperado <TermoArit2 → '* | /' FatorArit TermoArit2 | e>";
 	String erro_fatorarit="esperado <FatorArit → 'NUMINT' | 'NUMREAL' | 'VARIAVEL' | '(' ExpArit ')'>";
-	String erro_exprel2="esperado <ExpRel2 → OpBool TermoRel ExpRel2 | e;>";
-	String erro_termorel="esperado <TermoRel → ExpArit 'OP_REL' ExpArit | '(' ExpRel ')';>";
+	String erro_exprel2="esperado <ExpRel2 → 'E | OU' TermoRel ExpRel2 | e;>";
+	String erro_termorel="esperado <TermoRel → ExpArit '< | > | <= | >= | == | !=' ExpArit | '(' ExpRel ')';>";
 	
 	public Sintatico(ArrayList<Token> tokens) {
 		this.tokens = tokens;
