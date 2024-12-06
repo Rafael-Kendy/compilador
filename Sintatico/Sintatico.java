@@ -11,7 +11,7 @@ public class Sintatico {
 	String erro_delim="esperado <Delim, ':'>";
 	String erro_abrepar="esperado <AbrePar, '('>";
 	String erro_fechapar="esperado <FechaPar, ')'>";
-	String erro_comsaida2="esperado <VARIAVEL | CADEIA>";
+	String erro_comsaida2="esperado <'VARIAVEL' | 'CADEIA'>";
 	String erro_verificarfim="esperado <PCFim, 'FIM'>";
 	private boolean dentroBloco = false; //booleano
 
@@ -32,7 +32,7 @@ public class Sintatico {
 			System.out.println("\tERRO Sintático na linha " + tokens.get(pos).getLinha() + ": " + erro);
 			System.exit(1);
 		}else {
-			System.out.println("\tERRO Sintático na linha " + tokens.get(pos).getLinha() + ": inesperado <" + tokens.get(pos).getTipo() + ", " + tokens.get(pos).getLexema() + ">");
+			System.out.println("\tERRO Sintático na linha " + tokens.get(pos).getLinha() + ": inesperado <" + tokens.get(pos).getTipo() + ", '" + tokens.get(pos).getLexema() + "'>");
 			System.exit(1);
 		}//if else erro
 	}//match
