@@ -11,6 +11,9 @@ public class Sintatico {
 	String erro_delim="esperado <Delim, ':'>";
 	String erro_abrepar="esperado <AbrePar, '('>";
 	String erro_fechapar="esperado <FechaPar, ')'>";
+	String erro_comsaida2="esperado <VARIAVEL | CADEIA>";
+	String erro_verificarfim="esperado <PCFim, 'FIM'>";
+	private boolean dentroBloco = false; //booleano
 
 	public Sintatico(ArrayList<Token> tokens) {
 		this.tokens = tokens;
@@ -20,7 +23,9 @@ public class Sintatico {
 	
 	
 	public void match(TipoToken tipo, String erro) {
-		if(tokens.get(pos).getTipo()==tipo) {
+		//System.out.println("esperado: " + tipo + " | Encontrado: " + tokens.get(pos).getTipo());
+		
+		 if(tokens.get(pos).getTipo()==tipo) {
 			System.out.println("\t"+tokens.get(pos));
 			pos++;
 		}else if(erro!=null){
@@ -35,17 +40,19 @@ public class Sintatico {
 	
 	
 	public void prog() { //Prog -> ‘:’ ‘DEC’ ListaDec ‘:’ ‘PROG’ ListaCom
-		tt=TipoToken.Delim; //':'
-		match(tt, erro_delim);
-		tt=TipoToken.PCDec; //'DEC'
-		match(tt, erro_pcdec);
-		listaDec();
-		tt=TipoToken.Delim; //':'
-		match(tt, erro_delim);
-		tt=TipoToken.PCProg; //'PROG'
-		match(tt, erro_pcdec);
-		listaCom();
+	    tt = TipoToken.Delim; //':'
+	    match(tt, erro_delim);
+	    tt = TipoToken.PCDec; //'DEC'
+	    match(tt, erro_pcdec);
+	    listaDec();
+	    tt = TipoToken.Delim; //':'
+	    match(tt, erro_delim);
+	    tt = TipoToken.PCProg; //'PROG'
+	    match(tt, erro_pcprog); 
+	    listaCom();
+	    verificarFim(); //verifica o fim ao final do programa
 	}//prog
+
 	
 	
 	public void listaDec() { //ListaDec -> Dec ListaDec2
@@ -145,14 +152,17 @@ public class Sintatico {
 	
 	
 	public void comSaida2() { //ComSaida2 -> VARIAVEL | CADEIA;
-		if(tokens.get(pos).getTipo()==TipoToken.Var) {
-			tt=TipoToken.Var; //'VARIAVEL'	
-		}else {
-			tt=TipoToken.Cadeia; //'CADEIA'
-		}//if var ou cadeia
-		match(tt, null);
-	}//comSaida
-	
+	    if (tokens.get(pos).getTipo() == TipoToken.Var) {
+	        tt = TipoToken.Var; //'VARIAVEL'
+	        match(tt, null);
+	    } else if (tokens.get(pos).getTipo() == TipoToken.Cadeia) {
+	        tt = TipoToken.Cadeia; //'CADEIA'
+	        match(tt, null);
+	    } else {
+	        match(null, erro_comsaida2);
+	    }
+	}//comSaida2
+
 	//////////////////////////////////////////////////////
 	
 	public void comCondicao() {//ComandoCondicao → 'SE' ExpressaoRelacional 'ENTAO' Comando ComandoCondicao2;
@@ -182,27 +192,40 @@ public class Sintatico {
 	}//comRep
 	
 	
-	public void subAlg() { //SubAlgoritmo → 'INI' ListaComandos 'FIM';
+	public void subAlg() {
 	    tt = TipoToken.PCIni; //'INI'
-	    match(tt, null);
-	    listaCom(); 
-	    tt = TipoToken.PCFim; //'FIM'
-	    match(tt, null);
+	    match(tt, null);      
+	    dentroBloco = true;   //ta no loop
+
+	    listaCom();           
+
+	    //verifica se apos a lista de comandos existe o token PCFim
+	    if (pos < tokens.size() && tokens.get(pos).getTipo() == TipoToken.PCFim) {
+	        tt = TipoToken.PCFim;  //'FIM'
+	        match(tt, null);       
+	        dentroBloco = false;   //fecha o loop
+	    } 
 	}//subAlg
-	
+
+
 	
 	public void expArit() { //ExpressaoAritmetica → TermoAritmetico  ExpressaoAritmetica2;
-	    termoArit(); 
+		//System.out.println("analisando expressão aritmética na posição: " + pos);
+		termoArit(); 
 	    expArit2(); 
 	}//expArit
 	
 	
-	public void expArit2() { //ExpressaoAritmetica2 → '+' ExpressaoAritmetica | '-' ExpressaoAritmetica | e;
+	public void expArit2() {//ExpressaoAritmetica2 → '+' ExpressaoAritmetica | '-' ExpressaoAritmetica | e;
 	    if (tokens.get(pos).getTipo() == TipoToken.OpAritSoma || tokens.get(pos).getTipo() == TipoToken.OpAritSub) {
 	        tt = tokens.get(pos).getTipo(); //'+' ou '-'
 	        match(tt, null);
 	        expArit();
-	    }
+	    } else if (tokens.get(pos).getTipo() == TipoToken.NumInt) {
+	    	match(null, null);
+	    }/* else {
+	        System.out.println("expressao aritmetica finalizada na posição: " + pos);
+	    }*/
 	}//expArit2
 
 	
@@ -223,16 +246,29 @@ public class Sintatico {
 
 	
 	public void fatorArit() { //FatorAritmetico → NUMINT | NUMREAL | VARIAVEL | '(' ExpressaoAritmetica ')'
-	    if (tokens.get(pos).getTipo() == TipoToken.NumInt || tokens.get(pos).getTipo() == TipoToken.NumReal || tokens.get(pos).getTipo() == TipoToken.Var) {
+	    if (tokens.get(pos).getTipo() == TipoToken.NumInt || 
+	        tokens.get(pos).getTipo() == TipoToken.NumReal || 
+	        tokens.get(pos).getTipo() == TipoToken.Var) {
 	        tt = tokens.get(pos).getTipo(); //NUMINT, NUMREAL ou VARIAVEL
 	        match(tt, null);
 	    } else if (tokens.get(pos).getTipo() == TipoToken.AbrePar) {
 	        tt = TipoToken.AbrePar; //'('
 	        match(tt, erro_abrepar);
-	        expArit(); 
-	        tt = TipoToken.FechaPar; //')'
-	        match(tt, erro_fechapar);
-	    }
+	        expArit();
+	        if (tokens.get(pos).getTipo() == TipoToken.FechaPar) {
+	            tt = TipoToken.FechaPar; //')'
+	            match(tt, erro_fechapar);
+	        } else if (tokens.get(pos).getTipo() == TipoToken.OpRelMaior || tokens.get(pos).getTipo() == TipoToken.OpRelMenor ||
+	                   tokens.get(pos).getTipo() == TipoToken.OpRelMaiorIgual || tokens.get(pos).getTipo() == TipoToken.OpRelMenorIgual ||
+	                   tokens.get(pos).getTipo() == TipoToken.OpRelIgual || tokens.get(pos).getTipo() == TipoToken.OpRelDif) {
+	            match(null, null);
+	        } else {
+	        	match(tt, erro_fechapar);
+	        }
+	    } else {
+        	tt = tokens.get(pos).getTipo();
+            match(tt, null);
+	    }//erro
 	}//fatoArit
 	
 
@@ -248,7 +284,7 @@ public class Sintatico {
 	        match(tt, null);
 	        termoRel(); 
 	        expRel2(); 
-	    } 
+	    }//if (tokens.get(pos).getTipo() == TipoToken.OpBoolE || tokens.get(pos).getTipo() == TipoToken.OpBoolOu)
 	}//expRel2
 	
 	public void termoRel() { //TermoRelacional → ExpressaoAritmetica OP_REL ExpressaoAritmetica | '(' ExpressaoRelacional ')';
@@ -260,17 +296,27 @@ public class Sintatico {
 	        match(tt, erro_fechapar);
 	    } else {
 	    	expArit();
-        if (tokens.get(pos).getTipo() == TipoToken.OpRelMenor ||
-            tokens.get(pos).getTipo() == TipoToken.OpRelMaior ||
-            tokens.get(pos).getTipo() == TipoToken.OpRelMenorIgual ||
-            tokens.get(pos).getTipo() == TipoToken.OpRelMaiorIgual ||
-            tokens.get(pos).getTipo() == TipoToken.OpRelIgual ||
-            tokens.get(pos).getTipo() == TipoToken.OpRelDif) {
+        if (tokens.get(pos).getTipo() == TipoToken.OpRelMenor || tokens.get(pos).getTipo() == TipoToken.OpRelMaior ||
+            tokens.get(pos).getTipo() == TipoToken.OpRelMenorIgual || tokens.get(pos).getTipo() == TipoToken.OpRelMaiorIgual ||
+            tokens.get(pos).getTipo() == TipoToken.OpRelIgual || tokens.get(pos).getTipo() == TipoToken.OpRelDif) {
             tt = tokens.get(pos).getTipo(); //pega o operador relacional
             match(tt, null);
-        } 
+        }//if 
         expArit(); 
-    }
+    }//if(tokens.get(pos).getTipo() == TipoToken.AbrePar)
 }//termoRel
+
+	//verifica o loop
+	public void verificarFim() {
+	    if (tokens.get(pos).getTipo() == TipoToken.Fim) {
+	        if (dentroBloco) {
+	        	match(tt, erro_verificarfim);
+	        }//if (dentroBloco)
+	        System.out.println("Análise sintática concluída.");
+	    } else {
+	    	match(null, null);
+	    }//if (tokens.get(pos).getTipo() == TipoToken.Fim)
+	}//verificarFim
+
 
 }//Sintatico

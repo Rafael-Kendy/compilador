@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class Lexico {
 	LeitorArq learq;
 	String linha_at="";
@@ -24,13 +23,31 @@ public class Lexico {
 
 	public String[] separaStr(String input) {
 		//separa a string usando os simbolos como delimitador, usa tambem lookbehind, lookahead para separar melhor 
-	    String[] partes = input.split("(?<=:|<|>|=|\"|\"|[+*/()\\s-])|(?=:|<|>|=|\"|\"|[+*/()\\s-])|(?<!\\d)\\.(?!\\d)|\\s+");
+	    int i=0;
+		String[] partes = input.split("(?<=:|<|>|=|\"|\"|[+*/()\\s-])|(?=:|<|>|=|\"|\"|[+*/()\\s-])|(?<!\\d)\\.(?!\\d)|\\s+");
 	    List<String> result = new ArrayList<>();
 
 	    StringBuilder cadeia_aspas=new StringBuilder();
 	    boolean dentro_aspas=false;
 	    
-	    for(String parte:partes) {	
+	    for(i=0; i<partes.length; i++){	
+	    	String parte=partes[i];
+	    	
+	    	if(parte.charAt(parte.length()-1)=='.') {//se terminar com ponto
+	    		StringBuilder real_espacado=new StringBuilder(parte);
+	    		int j=i+1;
+	    		while(j<partes.length && partes[j].isBlank()) { //vai pulando espaços
+	    			j++;
+	    		}//while(j<partes.length && partes[j].isBlank())
+	    		
+	    		if(j < partes.length && partes[j].matches("\\d+")) { //se tiver numero dps dos espaços
+	    			real_espacado.append(partes[j]);
+	    			result.add(real_espacado.toString());
+	    			i=j;
+	    			continue;
+	    		}//if (j < partes.length && partes[j].matches("\\d+"))
+	    	}//if(parte.charAt(parte.length()-1)=='.')
+	    	
 	    	if(parte.equals("\"")) {
 	    		if(!dentro_aspas) {
 	    			dentro_aspas=true; //se ainda nao estiver dentro, seta a flag
@@ -52,6 +69,7 @@ public class Lexico {
 	    	result.add(cadeia_aspas.toString());
 	    	dentro_aspas=false;
 	    }//if(dentro_aspas)
+	    
 
         //converte a lista de volta para array de strings e retorna
         return result.toArray(new String[0]);
@@ -143,7 +161,7 @@ public class Lexico {
 	                System.out.println("\tERRO Léxico na linha " + linha_num + ": \"" + str + "\"");
 	                System.exit(1);
 	            }
-	            
+
 	            //detecta numeros
 	            if (Pattern.matches("\\d*\\.\\d+", str) || Pattern.matches("\\d+\\.", str)) { //numero real
 	                Token tok_real = new Token(str, TipoToken.NumReal, linha_num);
